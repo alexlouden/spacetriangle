@@ -13,20 +13,28 @@
   height = $("#game").height();
 
   generate_star_group = function() {
-    var group, i, layer, num_stars, x, y, _i;
+    var colour, glowamount, glowcolour, glowsize, group, i, layer, num_stars, size, x, y, _i;
     layer = new Kinetic.Layer();
     group = new Kinetic.Group();
     num_stars = getRandom(100, 200);
     for (i = _i = 0; 0 <= num_stars ? _i <= num_stars : _i >= num_stars; i = 0 <= num_stars ? ++_i : --_i) {
       x = Math.random() * width;
       y = Math.random() * height;
-      console.log([x, y]);
+      size = Math.random() * 0.8;
+      colour = "#ffffff";
+      glowcolour = '#ffffff';
+      glowsize = Math.random() * 30;
+      glowamount = Math.random() * 0.8;
       group.add(new Kinetic.Circle({
         x: x,
         y: y,
-        radius: 1,
-        strokeWidth: Math.random() * 1,
-        stroke: "#ffffff"
+        fillEnabled: false,
+        radius: size,
+        strokeWidth: size,
+        stroke: colour,
+        shadowColor: glowcolour,
+        shadowBlur: glowsize * size,
+        shadowOpacity: glowamount
       }));
     }
     layer.add(group);
