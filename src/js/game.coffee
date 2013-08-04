@@ -15,15 +15,23 @@ generate_star_group = ->
   for i in [0..num_stars]
     x = Math.random() * width
     y = Math.random() * height
+    size = Math.random() * 0.8
+    colour = "#ffffff"
     
-    console.log([x, y])
+    glowcolour = '#ffffff'
+    glowsize = Math.random() * 30
+    glowamount = Math.random() * 0.8
     
     group.add new Kinetic.Circle(
       x: x
       y: y
-      radius: 1
-      strokeWidth: Math.random()*1
-      stroke: "#ffffff"
+      fillEnabled: false
+      radius: size
+      strokeWidth: size
+      stroke: colour
+      shadowColor: glowcolour
+      shadowBlur: glowsize*size
+      shadowOpacity: glowamount
     )
   
   layer.add group
