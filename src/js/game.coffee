@@ -64,6 +64,20 @@ class Player extends SpaceShip
       stroke: "#ffffff"
     )
     
+    exhaust = new Kinetic.Line(
+      points: [
+        [width/2, -height/3-5]
+        [-width/2, -height/3-5]
+      ]
+      stroke: 'red'
+      strokeWidth: 3
+      lineCap: 'round'
+      lineJoin: 'round'
+    )
+    @ship.add exhaust
+    @ship.exhaust = exhaust
+    @ship.exhaust.hide()
+    
   keyDownHandler: (event) =>
     switch event.which
       when 38 then @forward = true
@@ -94,13 +108,16 @@ class Player extends SpaceShip
     if @forward
       @acceleration.x = FWD_ACC * xrot
       @acceleration.y = FWD_ACC * yrot
+      @ship.exhaust.show()
     else if @backward
       @acceleration.x = -FWD_ACC * xrot
       @acceleration.y = -FWD_ACC * yrot
+      @ship.exhaust.hide()
     else
       @acceleration.x = 0
       @acceleration.y = 0
-          
+      @ship.exhaust.hide()
+        
     if @left
       @acceleration.rot = -ROT_ACC
     else if @right

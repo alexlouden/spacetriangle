@@ -72,13 +72,24 @@
     }
 
     Player.prototype.makeShip = function(width, height) {
+      var exhaust;
       this.ship = new Kinetic.Group();
-      return this.ship.add(new Kinetic.Polygon({
+      this.ship.add(new Kinetic.Polygon({
         points: [[0, height * 2 / 3], [-width / 2, -height * 1 / 3], [width / 2, -height * 1 / 3]],
         fill: "#000000",
         strokeWidth: 3,
         stroke: "#ffffff"
       }));
+      exhaust = new Kinetic.Line({
+        points: [[width / 2, -height / 3 - 5], [-width / 2, -height / 3 - 5]],
+        stroke: 'red',
+        strokeWidth: 3,
+        lineCap: 'round',
+        lineJoin: 'round'
+      });
+      this.ship.add(exhaust);
+      this.ship.exhaust = exhaust;
+      return this.ship.exhaust.hide();
     };
 
     Player.prototype.keyDownHandler = function(event) {
@@ -135,12 +146,15 @@
       if (this.forward) {
         this.acceleration.x = FWD_ACC * xrot;
         this.acceleration.y = FWD_ACC * yrot;
+        this.ship.exhaust.show();
       } else if (this.backward) {
         this.acceleration.x = -FWD_ACC * xrot;
         this.acceleration.y = -FWD_ACC * yrot;
+        this.ship.exhaust.hide();
       } else {
         this.acceleration.x = 0;
         this.acceleration.y = 0;
+        this.ship.exhaust.hide();
       }
       if (this.left) {
         this.acceleration.rot = -ROT_ACC;
