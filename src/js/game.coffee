@@ -7,58 +7,35 @@ width = $("#game").width()
 height = $("#game").height()
 
 class SpaceShip
-  velocity =
-    x: 0
-    y: 0
-    rot: 0
-
-  acceleration =
-    x: 0
-    y: 0
-    rot: 0
   
   constructor: (name, width, height) ->
     @name = name
     @width = width
     @height = height
     
-  makeShip: (width, height) =>
-    self.ship = new Kinetic.Group()
+    @velocity =
+      x: 0
+      y: 0
+      rot: 0
+
+    @acceleration =
+      x: 0
+      y: 0
+      rot: 0
+    
+  makeShip: (width, height) ->
+    @ship = new Kinetic.Group()
     return
     
-  float: =>
-    
-    # vel
-    self.velocity.x += self.acceleration.x * tdiff
-    self.velocity.y += self.acceleration.y * tdiff
-    self.velocity.rot += self.acceleration.rot * tdiff
-    
-    if self.brake
-      self.velocity.x *= self.BRAKE_STRENGTH # todo add tdiff as a factor
-      self.velocity.y *= self.BRAKE_STRENGTH
-      self.velocity.rot *= self.BRAKE_STRENGTH
-    
-    # pos
-    self.ship.setX self.ship.getX() + self.velocity.x
-    self.ship.setY self.ship.getY() + self.velocity.y
-    self.ship.setRotationDeg self.ship.getRotationDeg() + self.velocity.rot
-    
-    # wrap
-    if self.ship.getX() < -shipheight / 2
-      self.ship.setX self.ship.getX() + width + 100  # left
-    if self.ship.getY() < -shipheight / 2
-      self.ship.setY self.ship.getY() + height + 100  # top
-    if self.ship.getX() > width + shipheight
-      self.ship.setX self.ship.getX() - width - 100   # right
-    if self.ship.getY() > height + shipheight
-      self.ship.setY self.ship.getY() - height - 100  # bottom
+  float: (tdiff) ->
+            
 
-class Player extends SpaceObject
-  forward = false
-  backward = false
-  left = false
-  right = false
-  shooting = false
+class Player extends SpaceShip
+  @forward = false
+  @backward = false
+  @left = false
+  @right = false
+  @shooting = false
   
   FWD_ACC = 4 # px/s
   ROT_ACC = 8 # deg/s
@@ -67,16 +44,16 @@ class Player extends SpaceObject
   constructor: ->
     super("Human", 30, 50)
     
-    self.makeShip(self.width, self.height)
+    @makeShip(@width, @height)
     
-    self.ship.setX width / 2
-    self.ship.setY height / 2
-    self.ship.setRotationDeg 180
+    @ship.setX width / 2
+    @ship.setY height / 2
+    @ship.setRotationDeg 180
     
-  makeShip: (width, height) =>
-    self.ship = new Kinetic.Group()
+  makeShip: (width, height) ->
+    @ship = new Kinetic.Group()
     
-    self.ship.add new Kinetic.Polygon(
+    @ship.add new Kinetic.Polygon(
       points: [
         [       0,  height * 2/3],
         [-width/2, -height * 1/3],
@@ -89,64 +66,76 @@ class Player extends SpaceObject
     
   keyDownHandler: (event) =>
     switch event.which
-      when 38
-        self.forward = true
-      when 40
-        self.backward = true
-      when 37
-        self.left = true
-      when 39
-        self.right = true
-      when 32
-        self.shooting = true
-      when 88 # x
-        self.brake = true
+      when 38 then @forward = true
+      when 40 then @backward = true
+      when 37 then @left = true
+      when 39 then @right = true
+      when 32 then @shooting = true  # space
+      when 88 then @brake = true     # x
       else
         console.log event.which
     return
     
   keyUpHandler: (event) =>
     switch event.which
-      when 38
-        self.forward = false
-      when 40
-        self.backward = false
-      when 37
-        self.left = false
-      when 39
-        self.right = false
-      when 32
-        self.shooting = false
-      when 88 # x
-        self.brake = false
+      when 38 then @forward = false
+      when 40 then @backward = false
+      when 37 then @left = false
+      when 39 then @right = false
+      when 32 then @shooting = false
+      when 88 then @brake = false
     return
   
   step: (tdiff) =>
-    xrot = Math.cos(self.ship.getRotation() + Math.PI / 2)
-    yrot = Math.sin(self.ship.getRotation() + Math.PI / 2)
+    xrot = Math.cos(@ship.getRotation() + Math.PI / 2)
+    yrot = Math.sin(@ship.getRotation() + Math.PI / 2)
     
     # acc
-    if self.forward
-      self.acceleration.x = self.FWD_ACC * xrot
-      self.acceleration.y = self.FWD_ACC * yrot
-    else if self.backward
-      self.acceleration.x = -self.FWD_ACC * xrot
-      self.acceleration.y = -self.FWD_ACC * yrot
+    if @forward
+      @acceleration.x = FWD_ACC * xrot
+      @acceleration.y = FWD_ACC * yrot
+    else if @backward
+      @acceleration.x = -FWD_ACC * xrot
+      @acceleration.y = -FWD_ACC * yrot
     else
-      self.acceleration.x = 0
-      self.acceleration.y = 0
-      
-    if self.left
-      self.acceleration.rot = -self.ROT_ACC
-    else if self.right
-      self.acceleration.rot = self.ROT_ACC
+      @acceleration.x = 0
+      @acceleration.y = 0
+          
+    if @left
+      @acceleration.rot = -ROT_ACC
+    else if @right
+      @acceleration.rot = ROT_ACC
     else
-      self.acceleration.rot = 0
+      @acceleration.rot = 0
     
-    self.float()
+    if @brake
+      @velocity.x *= BRAKE_STRENGTH # todo add tdiff as a factor
+      @velocity.y *= BRAKE_STRENGTH
+      @velocity.rot *= BRAKE_STRENGTH
+    
+    # vel
+    @velocity.x += @acceleration.x * tdiff
+    @velocity.y += @acceleration.y * tdiff
+    @velocity.rot += @acceleration.rot * tdiff
+
+    # pos
+    @ship.setX @ship.getX() + @velocity.x
+    @ship.setY @ship.getY() + @velocity.y
+    @ship.setRotationDeg @ship.getRotationDeg() + @velocity.rot
+
+    # wrap
+    if @ship.getX() < -@height / 2
+      @ship.setX @ship.getX() + width + 100  # left
+    if @ship.getY() < -@height / 2
+      @ship.setY @ship.getY() + height + 100  # top
+    if @ship.getX() > width + @height
+      @ship.setX @ship.getX() - width - 100   # right
+    if @ship.getY() > height + @height
+      @ship.setY @ship.getY() - height - 100  # bottom
+    
 
 window.onload = ->
-  
+    
   stage = new Kinetic.Stage(
     container: "game"
     width: width
@@ -154,6 +143,11 @@ window.onload = ->
   )
   
   player = new Player()
+  
+  # put player in global scope for testing
+  root = exports ? this
+  root.player = player
+  root.anim = anim
   
   layer = new Kinetic.Layer()
   layer.add player.ship
