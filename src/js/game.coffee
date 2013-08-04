@@ -6,6 +6,29 @@ getRandom = (min, max) ->
 width = $("#game").width()
 height = $("#game").height()
 
+generate_star_group = ->
+  layer = new Kinetic.Layer()
+  group = new Kinetic.Group()
+  
+  num_stars = getRandom(100, 200)
+  
+  for i in [0..num_stars]
+    x = Math.random() * width
+    y = Math.random() * height
+    
+    console.log([x, y])
+    
+    group.add new Kinetic.Circle(
+      x: x
+      y: y
+      radius: 1
+      strokeWidth: Math.random()*1
+      stroke: "#ffffff"
+    )
+  
+  layer.add group
+  return layer
+
 class SpaceShip
   
   constructor: (name, width, height) ->
@@ -165,10 +188,14 @@ window.onload = ->
   root = exports ? this
   root.player = player
   root.anim = anim
+  root.stage = stage
   
   layer = new Kinetic.Layer()
   layer.add player.ship
   stage.add layer
+  
+  stars = generate_star_group()
+  stage.add stars
   
   anim = new Kinetic.Animation((frame) ->
     tdiff = frame.timeDiff / 1000

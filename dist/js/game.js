@@ -1,5 +1,5 @@
 (function() {
-  var Player, SpaceShip, getRandom, height, width,
+  var Player, SpaceShip, generate_star_group, getRandom, height, width,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -11,6 +11,27 @@
   width = $("#game").width();
 
   height = $("#game").height();
+
+  generate_star_group = function() {
+    var group, i, layer, num_stars, x, y, _i;
+    layer = new Kinetic.Layer();
+    group = new Kinetic.Group();
+    num_stars = getRandom(100, 200);
+    for (i = _i = 0; 0 <= num_stars ? _i <= num_stars : _i >= num_stars; i = 0 <= num_stars ? ++_i : --_i) {
+      x = Math.random() * width;
+      y = Math.random() * height;
+      console.log([x, y]);
+      group.add(new Kinetic.Circle({
+        x: x,
+        y: y,
+        radius: 1,
+        strokeWidth: Math.random() * 1,
+        stroke: "#ffffff"
+      }));
+    }
+    layer.add(group);
+    return layer;
+  };
 
   SpaceShip = (function() {
     function SpaceShip(name, width, height) {
@@ -193,7 +214,7 @@
   })(SpaceShip);
 
   window.onload = function() {
-    var anim, layer, player, root, stage;
+    var anim, layer, player, root, stage, stars;
     stage = new Kinetic.Stage({
       container: "game",
       width: width,
@@ -203,9 +224,12 @@
     root = typeof exports !== "undefined" && exports !== null ? exports : this;
     root.player = player;
     root.anim = anim;
+    root.stage = stage;
     layer = new Kinetic.Layer();
     layer.add(player.ship);
     stage.add(layer);
+    stars = generate_star_group();
+    stage.add(stars);
     anim = new Kinetic.Animation(function(frame) {
       var tdiff;
       tdiff = frame.timeDiff / 1000;
