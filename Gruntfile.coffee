@@ -23,7 +23,7 @@ module.exports = (grunt) ->
     copy:
       js:
         files:
-          [expand: true, src: ['src/**/*.js'], dest: 'dist/js/', filter: 'isFile']
+          [expand: true, cwd: 'src/js/', src: ['*.js'], dest: 'dist/js/', filter: 'isFile']
           
     # SASS -> CSS
     compass:
@@ -65,7 +65,7 @@ module.exports = (grunt) ->
           livereload: true
       js:
         files: ["Gruntfile.coffee", "src/**/*.coffee", "src/**/*.js"]
-        tasks: ["coffeelint","coffee"]
+        tasks: ["coffeelint","coffee", "copy"]
       style:
         files: ["src/**/*.sass", "src/**/*.css"]
         tasks: ["compass"]
@@ -83,7 +83,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-contrib-connect"
   grunt.loadNpmTasks "grunt-contrib-watch"
   
-  grunt.registerTask "build", ["coffeelint", "coffee", "compass", "htmlmin"]
+  grunt.registerTask "build", ["coffeelint", "coffee", "copy", "compass", "htmlmin"]
   
   grunt.registerTask "dev", ["clean:build", "build", "connect", "watch"]
   grunt.registerTask "default", ["dev"]
