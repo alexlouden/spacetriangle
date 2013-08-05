@@ -4,5 +4,5 @@
 
 A simple space browser-based game. 
 
-Built using kineticjs in coffeescript by alexlouden and calumroy
+Built using kineticjs in coffeescript by alexlouden and calumroy.  
 Developed using grunt. 
