@@ -183,7 +183,12 @@ class Player extends SpaceShip
     
 
 window.onload = ->
-    
+  
+  fb = new Firebase('https://spacetriangle.firebaseio.com/')
+
+  fb.child('world').on 'value', (data) ->
+    console.log data.val()
+
   stage = new Kinetic.Stage(
     container: "game"
     width: width
@@ -197,6 +202,7 @@ window.onload = ->
   root.player = player
   root.anim = anim
   root.stage = stage
+  root.fb = fb
   
   layer = new Kinetic.Layer()
   layer.add player.ship

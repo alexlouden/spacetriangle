@@ -222,7 +222,11 @@
   })(SpaceShip);
 
   window.onload = function() {
-    var anim, layer, player, root, stage, stars;
+    var anim, fb, layer, player, root, stage, stars;
+    fb = new Firebase('https://spacetriangle.firebaseio.com/');
+    fb.child('world').on('value', function(data) {
+      return console.log(data.val());
+    });
     stage = new Kinetic.Stage({
       container: "game",
       width: width,
@@ -233,6 +237,7 @@
     root.player = player;
     root.anim = anim;
     root.stage = stage;
+    root.fb = fb;
     layer = new Kinetic.Layer();
     layer.add(player.ship);
     stage.add(layer);
