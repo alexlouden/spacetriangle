@@ -169,7 +169,7 @@
     };
 
     Player.prototype.step = function(tdiff) {
-      var xrot, yrot;
+      var x, xrot, y, yrot;
       xrot = Math.cos(this.ship.getRotation() + Math.PI / 2);
       yrot = Math.sin(this.ship.getRotation() + Math.PI / 2);
       if (this.forward) {
@@ -200,8 +200,14 @@
       this.velocity.x += this.acceleration.x * tdiff;
       this.velocity.y += this.acceleration.y * tdiff;
       this.velocity.rot += this.acceleration.rot * tdiff;
-      this.ship.setX(this.ship.getX() + this.velocity.x);
-      this.ship.setY(this.ship.getY() + this.velocity.y);
+      x = this.ship.getX() + this.velocity.x;
+      y = this.ship.getY() + this.velocity.y;
+      this.ship.setX(x);
+      this.ship.setY(y);
+      this.data.child('position').set({
+        x: x,
+        y: y
+      });
       this.ship.setRotationDeg(this.ship.getRotationDeg() + this.velocity.rot);
       if (this.ship.getX() < -this.height / 2) {
         this.ship.setX(this.ship.getX() + width + 100);
@@ -222,10 +228,15 @@
   })(SpaceShip);
 
   window.onload = function() {
-    var anim, fb, layer, player, root, stage, stars;
+    var anim, fb, layer, me, player, players, root, stage, stars;
     fb = new Firebase('https://spacetriangle.firebaseio.com/');
-    fb.child('world').on('value', function(data) {
-      return console.log(data.val());
+    players = fb.child('players');
+    players.on('value', function(data) {
+      return console.log('players: %o', data.val());
+    });
+    me = players.push({
+      name: 'Alex',
+      last_online: Date.now()
     });
     stage = new Kinetic.Stage({
       container: "game",
@@ -233,11 +244,13 @@
       height: height
     });
     player = new Player();
+    player.data = me;
     root = typeof exports !== "undefined" && exports !== null ? exports : this;
     root.player = player;
     root.anim = anim;
     root.stage = stage;
     root.fb = fb;
+    root.me = me;
     layer = new Kinetic.Layer();
     layer.add(player.ship);
     stage.add(layer);
